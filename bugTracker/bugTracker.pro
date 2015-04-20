@@ -16,11 +16,18 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     issueitem.cpp \
     issue.cpp \
-    datastore.cpp
+    datastore.cpp \
+    issuedetailsui.cpp
 
 HEADERS  += mainwindow.h \
     issueitem.h \
     issue.h \
-    datastore.h
+    datastore.h \
+    issuedetailsui.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    issuedetailsui.ui
+
+RESOURCES += \
+    icons.qrc \
+    images.qrc

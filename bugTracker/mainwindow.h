@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "datastore.h"
+#include "issuedetailsui.h"
 
 #include <QMainWindow>
 #include <QListWidgetItem>
@@ -20,14 +21,21 @@ public:
 
 private slots:
     void on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+    void on_actionLoadJSon_triggered();
+    void on_actionSaveJSon_triggered();
+    void on_listWidget_doubleClicked(const QModelIndex &index);
     void on_pushButton_clicked();
 
     void on_pushButton_2_clicked();
 
 private:
     Ui::MainWindow *ui;
-    void displayIssues();
+    IssueDetailsUI *idUI;
     DataStore dataStore;
+
+    void displayIssues();
+    void editIssue(Issue &issue);
+    void newIssue();
 };
 
 #endif // MAINWINDOW_H
