@@ -131,6 +131,9 @@
        <property name="text">
         <string>Save</string>
        </property>
+       <property name="shortcut">
+        <string>Ctrl+Return</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -196,8 +199,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>334</x>
-     <y>449</y>
+     <x>214</x>
+     <y>256</y>
     </hint>
     <hint type="destinationlabel">
      <x>336</x>
@@ -212,8 +215,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>616</x>
-     <y>448</y>
+     <x>424</x>
+     <y>256</y>
     </hint>
     <hint type="destinationlabel">
      <x>590</x>

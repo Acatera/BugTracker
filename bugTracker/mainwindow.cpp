@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     on_actionLoadJSon_triggered();
+    connect(ui->listWidget, SIGNAL(keyPressEvent(QKeyEvent)),
+            this, SLOT(listKeyPressEvent(QKeyEvent)));
 }
 
 MainWindow::~MainWindow()
@@ -39,22 +41,32 @@ void MainWindow::displayIssues()
     }
 }
 
+void MainWindow::displayIssueDetails(Issue *ptrIssue)
+{
+    ui->issueDetails->setPlainText(ptrIssue->title);
+    ui->issueDetails->appendPlainText("--------------------");
+    ui->issueDetails->appendPlainText("Type:" + ptrIssue->type + "; Status:" + ptrIssue->status);
+    ui->issueDetails->appendPlainText("Created at:" + ptrIssue->createdAt.toString("yyyy-MM-dd hh:mm:ss"));
+    ui->issueDetails->appendPlainText("Updated at:" + ptrIssue->updatedAt.toString("yyyy-MM-dd hh:mm:ss"));
+    if (ptrIssue->closedAt.toMSecsSinceEpoch() != 0) {
+        ui->issueDetails->appendPlainText("Closed at:" + ptrIssue->closedAt.toString("yyyy-MM-dd hh:mm:ss"));
+    }
+    ui->issueDetails->appendPlainText("--------------------");
+
+    for (int i = 0; i < ptrIssue->description.count(); i++){
+        ui->issueDetails->appendPlainText(ptrIssue->description.at(i));
+    }
+}
+
 void MainWindow::on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
 {
     (void) previous;
     if (current == nullptr)
         return;
 
-    Issue *issue = (Issue *) current->data(Qt::UserRole).value<void *>();
+    Issue *ptrIssue = (Issue *) current->data(Qt::UserRole).value<void *>();
 
-    ui->issueDetails->setPlainText(issue->title);
-    ui->issueDetails->appendPlainText("--------------------");
-    ui->issueDetails->appendPlainText("Type:" + issue->type + "; Status:" + issue->status);
-    ui->issueDetails->appendPlainText("--------------------");
-
-    for (int i = 0; i < issue->description.count(); i++){
-        ui->issueDetails->appendPlainText(issue->description.at(i));
-    }
+    displayIssueDetails(ptrIssue);
 }
 
 void MainWindow::on_actionLoadJSon_triggered() {
@@ -92,13 +104,69 @@ void MainWindow::newIssue()
     delete idUI;
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *evt)
+{
+    if ((evt->key() == Qt::Key_Escape)) {
+        QApplication::quit();
+        return;
+    }
+
+    if ((evt->key() == Qt::Key_F1)) {
+        QMessageBox::about(this, "Hotkeys...",
+                           "F1 - shows this message\nEsc - exits the application\nLeft - sets focus to the left pane when right pane is focused\nRight - sets focus to the right pane when left pane is focused\nShift + Left - Marks selected issue as 'Pending'\nShift + Right - Marks selected issue as 'Done'\n");
+        return;
+    }
+
+    if ((evt->key() == Qt::Key_Return)) {
+        if (ui->listWidget->hasFocus() || ui->listWidget_2->hasFocus()) {
+            Issue *ptrIssue = getSelectedIssue();
+            if (ptrIssue != nullptr) {
+                editIssue(ptrIssue);
+            }
+        }
+    }
+
+    /* Horrible hack. Will fix when I know a bit more about stuffs */
+    bool isShiftPressed = evt->modifiers() & Qt::ShiftModifier;
+    if (ui->listWidget->hasFocus() && (evt->key() == Qt::Key_Right)) {
+        if (isShiftPressed) {
+            Issue *ptrIssue = getSelectedIssue();
+
+            if (ptrIssue == nullptr)
+                return;
+
+            setIssueDone(ptrIssue);
+            displayIssues();
+        } else {
+            ui->listWidget_2->setFocus();
+            if (ui->listWidget_2->selectedItems().size() == 0 && ui->listWidget->count() > 0) {
+                ui->listWidget_2->setCurrentRow(0);
+            }
+        }
+    } else if (ui->listWidget_2->hasFocus() && (evt->key() == Qt::Key_Left)) {
+        if (isShiftPressed) {
+            Issue *ptrIssue = getSelectedIssue();
+
+            if (ptrIssue == nullptr)
+                return;
+
+            setIssuePending(ptrIssue);
+            displayIssues();
+        } else {
+            ui->listWidget->setFocus();
+            if (ui->listWidget->selectedItems().size() == 0 && ui->listWidget->count() > 0) {
+                ui->listWidget->setCurrentRow(0);
+            }
+        }
+    }
+}
+
 void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
 {
     (void) index;
     Issue *ptrIssue = getSelectedIssue();
     if (ptrIssue == nullptr)
         return;
-
     editIssue(ptrIssue);
 }
 
@@ -114,10 +182,28 @@ void MainWindow::on_pushButton_2_clicked()
                                   QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {
-        int idx = ui->listWidget->row(ui->listWidget->currentItem());
-        dataStore.issues.removeAt(idx);
-        displayIssues();
+        Issue *ptrIssue = getSelectedIssue();
+        if (ptrIssue != nullptr) {
+            int idx = -1;
+            for (int i = 0; i < dataStore.issues.size(); i++) {
+                if (&dataStore.issues[i] == ptrIssue) {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx >= 0) {
+                dataStore.issues.removeAt(idx);
+                displayIssues();
+            }
+        }
     }
+}
+
+void MainWindow::setIssueDone(Issue *ptrIssue)
+{
+    ptrIssue->status = "done";
+    ptrIssue->updatedAt = QDateTime::currentDateTime();
+    ptrIssue->closedAt = QDateTime::currentDateTime();
 }
 
 void MainWindow::on_btnUpdateStatus_clicked()
@@ -126,7 +212,7 @@ void MainWindow::on_btnUpdateStatus_clicked()
     if (ptrIssue == nullptr)
         return;
 
-    ptrIssue->status = "done";
+    setIssueDone(ptrIssue);
     displayIssues();
 }
 
@@ -146,12 +232,40 @@ Issue* MainWindow::getSelectedIssue()
     return nullptr;
 }
 
+void MainWindow::setIssuePending(Issue *ptrIssue)
+{
+    ptrIssue->status = "pending";
+    ptrIssue->updatedAt = QDateTime::currentDateTime();
+    ptrIssue->closedAt = QDateTime::fromMSecsSinceEpoch(0);
+}
+
 void MainWindow::on_pushButton_3_clicked()
 {
-    Issue *prtIssue = getSelectedIssue();
-    if (prtIssue == nullptr)
+    Issue *ptrIssue = getSelectedIssue();
+    if (ptrIssue == nullptr)
         return;
 
-    prtIssue->status = "pending";
+    setIssuePending(ptrIssue);
     displayIssues();
+}
+
+void MainWindow::on_listWidget_2_doubleClicked(const QModelIndex &index)
+{
+    (void) index;
+    Issue *ptrIssue = getSelectedIssue();
+    if (ptrIssue == nullptr)
+        return;
+
+    editIssue(ptrIssue);
+}
+
+void MainWindow::on_listWidget_2_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
+{
+    (void) previous;
+    if (current == nullptr)
+        return;
+
+    Issue *ptrIssue = (Issue *) current->data(Qt::UserRole).value<void *>();
+
+    displayIssueDetails(ptrIssue);
 }

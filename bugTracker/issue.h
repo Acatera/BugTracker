@@ -3,6 +3,7 @@
 #include <QString>
 #include <QStringList>
 #include <QMetaType>
+#include <QDateTime>
 
 class Issue
 {
@@ -13,6 +14,9 @@ class Issue
     QStringList description;
     QString type;
     QString status;
+    QDateTime createdAt;
+    QDateTime updatedAt;
+    QDateTime closedAt;
     void read(const QJsonObject &json);
     void write(QJsonObject &json) const;
 };

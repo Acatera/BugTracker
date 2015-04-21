@@ -500,7 +500,11 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
        <widget class="QWidget" name="verticalLayoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QListWidget" name="listWidget"/>
+          <widget class="QListWidget" name="listWidget">
+           <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+           </property>
+          </widget>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
@@ -527,6 +531,9 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                <width>16</width>
                <height>16</height>
               </size>
+             </property>
+             <property name="shortcut">
+              <string>Ctrl+N</string>
              </property>
              <property name="flat">
               <bool>true</bool>
