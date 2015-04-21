@@ -2,5 +2,7 @@
     <qresource prefix="/icons">
         <file>img/icons/16minus.png</file>
         <file>img/icons/16plus.png</file>
+        <file>img/icons/checkbox_yes.png</file>
+        <file>img/icons/checkbox_no.png</file>
     </qresource>
 </RCC>

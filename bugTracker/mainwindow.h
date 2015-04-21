@@ -28,13 +28,18 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_btnUpdateStatus_clicked();
+
+    void on_pushButton_3_clicked();
+
 private:
     Ui::MainWindow *ui;
     IssueDetailsUI *idUI;
     DataStore dataStore;
+    Issue* getSelectedIssue();
 
     void displayIssues();
-    void editIssue(Issue &issue);
+    void editIssue(Issue *issue);
     void newIssue();
 };
 

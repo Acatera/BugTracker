@@ -29,5 +29,4 @@ FORMS    += mainwindow.ui \
     issuedetailsui.ui
 
 RESOURCES += \
-    icons.qrc \
     images.qrc

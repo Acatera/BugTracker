@@ -22,31 +22,38 @@ MainWindow::~MainWindow()
 void MainWindow::displayIssues()
 {
     ui->listWidget->clear();
-    foreach (const Issue issue, dataStore.issues) {
-        QVariant qv;
-        qv.setValue(issue);
+    ui->listWidget_2->clear();
+
+    for (int i = 0; i < dataStore.issues.size(); i++){
+        Issue &rIssue = dataStore.issues[i];
+        QVariant qv = qVariantFromValue((void *) &dataStore.issues[i]);
 
         QListWidgetItem *issueItem = new QListWidgetItem();
-        issueItem->setText(issue.title);
+        issueItem->setText(rIssue.title);
         issueItem->setData(Qt::UserRole, qv);
-        ui->listWidget->addItem(issueItem);
+        if (rIssue.status == "done") {
+            ui->listWidget_2->addItem(issueItem);
+        } else {
+            ui->listWidget->addItem(issueItem);
+        }
     }
 }
 
 void MainWindow::on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
 {
-    if (current == 0)
+    (void) previous;
+    if (current == nullptr)
         return;
 
-    Issue issue = current->data(Qt::UserRole).value<Issue>();
+    Issue *issue = (Issue *) current->data(Qt::UserRole).value<void *>();
 
-    ui->issueDetails->setPlainText(issue.title);
+    ui->issueDetails->setPlainText(issue->title);
     ui->issueDetails->appendPlainText("--------------------");
-    ui->issueDetails->appendPlainText("Type:" + issue.type);
+    ui->issueDetails->appendPlainText("Type:" + issue->type + "; Status:" + issue->status);
     ui->issueDetails->appendPlainText("--------------------");
 
-    for (int i = 0; i < issue.description.count(); i++){
-        ui->issueDetails->appendPlainText(issue.description.at(i));
+    for (int i = 0; i < issue->description.count(); i++){
+        ui->issueDetails->appendPlainText(issue->description.at(i));
     }
 }
 
@@ -64,7 +71,7 @@ void MainWindow::on_actionSaveJSon_triggered() {
     }
 }
 
-void MainWindow::editIssue(Issue &issue)
+void MainWindow::editIssue(Issue *issue)
 {
     idUI = new IssueDetailsUI(this);
     idUI->loadIssue(issue);
@@ -87,9 +94,12 @@ void MainWindow::newIssue()
 
 void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
 {
-    int idx = ui->listWidget->row(ui->listWidget->currentItem());
-    Issue &issue = dataStore.issues[idx];
-    editIssue(issue);
+    (void) index;
+    Issue *ptrIssue = getSelectedIssue();
+    if (ptrIssue == nullptr)
+        return;
+
+    editIssue(ptrIssue);
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -101,11 +111,47 @@ void MainWindow::on_pushButton_2_clicked()
 {
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "Confirm issue deletion...", "Are you sure you want to delete the selected issue?",
-                 QMessageBox::Yes | QMessageBox::No);
+                                  QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {
         int idx = ui->listWidget->row(ui->listWidget->currentItem());
         dataStore.issues.removeAt(idx);
         displayIssues();
     }
+}
+
+void MainWindow::on_btnUpdateStatus_clicked()
+{
+    Issue *ptrIssue = getSelectedIssue();
+    if (ptrIssue == nullptr)
+        return;
+
+    ptrIssue->status = "done";
+    displayIssues();
+}
+
+Issue* MainWindow::getSelectedIssue()
+{
+    QListWidgetItem *ptrCurrent;
+    if (ui->listWidget->hasFocus()) {
+        ptrCurrent = ui->listWidget->currentItem();
+    } else if (ui->listWidget_2->hasFocus()) {
+        ptrCurrent = ui->listWidget_2->currentItem();
+    }
+
+    if (ptrCurrent != nullptr) {
+        Issue *pIssue = (Issue *) ptrCurrent->data(Qt::UserRole).value<void *>();
+        return pIssue;
+    }
+    return nullptr;
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    Issue *prtIssue = getSelectedIssue();
+    if (prtIssue == nullptr)
+        return;
+
+    prtIssue->status = "pending";
+    displayIssues();
 }

@@ -12,6 +12,7 @@ class Issue
     QString title;
     QStringList description;
     QString type;
+    QString status;
     void read(const QJsonObject &json);
     void write(QJsonObject &json) const;
 };

@@ -508,12 +508,12 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
             <widget class="QPushButton" name="pushButton">
              <property name="maximumSize">
               <size>
-               <width>20</width>
-               <height>20</height>
+               <width>24</width>
+               <height>24</height>
               </size>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::ClickFocus</enum>
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="text">
               <string/>
@@ -537,12 +537,12 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
             <widget class="QPushButton" name="pushButton_2">
              <property name="maximumSize">
               <size>
-               <width>20</width>
-               <height>20</height>
+               <width>24</width>
+               <height>24</height>
               </size>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::ClickFocus</enum>
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="text">
               <string/>
@@ -575,6 +575,26 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
              </property>
             </spacer>
            </item>
+           <item>
+            <widget class="QPushButton" name="btnUpdateStatus">
+             <property name="maximumSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="images.qrc">
+               <normaloff>:/icons/img/icons/checkbox_yes.png</normaloff>:/icons/img/icons/checkbox_yes.png</iconset>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>
@@ -585,11 +605,41 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
           <widget class="QListWidget" name="listWidget_2"/>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_4">
-           <property name="text">
-            <string>PushButton</string>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_3">
+             <property name="maximumSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="images.qrc">
+               <normaloff>:/icons/img/icons/checkbox_no.png</normaloff>:/icons/img/icons/checkbox_no.png</iconset>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -600,6 +650,12 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
          <family>Droid Sans Mono</family>
          <pointsize>10</pointsize>
         </font>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
        </property>
       </widget>
      </widget>

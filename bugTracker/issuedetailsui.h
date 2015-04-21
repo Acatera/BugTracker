@@ -17,9 +17,9 @@ public:
     explicit IssueDetailsUI(QWidget *parent = 0);
     ~IssueDetailsUI();
     Issue getIssue();
-    void updateIssue(Issue &issue);
+    void updateIssue(Issue *issue);
 
-    void loadIssue(Issue &issue);
+    void loadIssue(Issue *issue);
 
 private:
     Ui::IssueDetailsUI *ui;

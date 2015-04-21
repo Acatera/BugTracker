@@ -2,16 +2,22 @@
 <ui version="4.0">
  <class>IssueDetailsUI</class>
  <widget class="QDialog" name="IssueDetailsUI">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>782</width>
-    <height>474</height>
+    <width>435</width>
+    <height>267</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Issue details...</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0">
