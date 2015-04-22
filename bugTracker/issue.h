@@ -17,8 +17,14 @@ class Issue
     QDateTime createdAt;
     QDateTime updatedAt;
     QDateTime closedAt;
+
+    bool isClosed();
+    void setClosed(bool mClosed);
+
     void read(const QJsonObject &json);
     void write(QJsonObject &json) const;
+private:
+    bool closed;
 };
 
 Q_DECLARE_METATYPE(Issue)

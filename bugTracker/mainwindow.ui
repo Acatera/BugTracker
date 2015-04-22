@@ -504,6 +504,9 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
            <property name="focusPolicy">
             <enum>Qt::StrongFocus</enum>
            </property>
+           <property name="frameShape">
+            <enum>QFrame::Panel</enum>
+           </property>
           </widget>
          </item>
          <item>
@@ -609,7 +612,11 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
        <widget class="QWidget" name="verticalLayoutWidget_2">
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QListWidget" name="listWidget_2"/>
+          <widget class="QListWidget" name="listWidget_2">
+           <property name="frameShape">
+            <enum>QFrame::Panel</enum>
+           </property>
+          </widget>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">

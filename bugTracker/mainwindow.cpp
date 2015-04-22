@@ -11,8 +11,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     on_actionLoadJSon_triggered();
-    connect(ui->listWidget, SIGNAL(keyPressEvent(QKeyEvent)),
-            this, SLOT(listKeyPressEvent(QKeyEvent)));
 }
 
 MainWindow::~MainWindow()
@@ -31,9 +29,14 @@ void MainWindow::displayIssues()
         QVariant qv = qVariantFromValue((void *) &dataStore.issues[i]);
 
         QListWidgetItem *issueItem = new QListWidgetItem();
-        issueItem->setText(rIssue.title);
+        QString timeStamp = rIssue.isClosed() ? rIssue.closedAt.toString("yyyy-MM-dd hh:mm:ss") : "";
+        if (timeStamp != "") {
+            timeStamp += " ";
+        }
+
+        issueItem->setText(timeStamp + rIssue.title);
         issueItem->setData(Qt::UserRole, qv);
-        if (rIssue.status == "done") {
+        if (rIssue.isClosed()) {
             ui->listWidget_2->addItem(issueItem);
         } else {
             ui->listWidget->addItem(issueItem);
@@ -202,8 +205,17 @@ void MainWindow::on_pushButton_2_clicked()
 void MainWindow::setIssueDone(Issue *ptrIssue)
 {
     ptrIssue->status = "done";
+    ptrIssue->setClosed(true);
     ptrIssue->updatedAt = QDateTime::currentDateTime();
     ptrIssue->closedAt = QDateTime::currentDateTime();
+}
+
+void MainWindow::setIssuePending(Issue *ptrIssue)
+{
+    ptrIssue->status = "pending";
+    ptrIssue->setClosed(false);
+    ptrIssue->updatedAt = QDateTime::currentDateTime();
+    ptrIssue->closedAt = QDateTime::fromMSecsSinceEpoch(0);
 }
 
 void MainWindow::on_btnUpdateStatus_clicked()
@@ -230,13 +242,6 @@ Issue* MainWindow::getSelectedIssue()
         return pIssue;
     }
     return nullptr;
-}
-
-void MainWindow::setIssuePending(Issue *ptrIssue)
-{
-    ptrIssue->status = "pending";
-    ptrIssue->updatedAt = QDateTime::currentDateTime();
-    ptrIssue->closedAt = QDateTime::fromMSecsSinceEpoch(0);
 }
 
 void MainWindow::on_pushButton_3_clicked()
