@@ -6,6 +6,7 @@
 Issue::Issue()
 {
     createdAt = QDateTime::currentDateTime();
+    closed = false;
 }
 
 Issue::~Issue()
@@ -29,9 +30,7 @@ void Issue::read(const QJsonObject &json)
   type = json["type"].toString();
   status = json["stage"].toString();
   closed = json["isClosed"].toBool();
-//  if (status == "done"){
-//      closed = true;
-//  }
+  priority = json["priority"].toString();
 
   createdAt = QDateTime::fromString(json["createdAt"].toString(), "yyyy-MM-dd hh:mm:ss");
   updatedAt = QDateTime::fromString(json["updatedAt"].toString(), "yyyy-MM-dd hh:mm:ss");
@@ -44,6 +43,7 @@ void Issue::write(QJsonObject &json) const
   json["description"] = description.join("\n");
   json["type"] = type;
   json["stage"] = status;
+  json["priority"] = priority;
   json["isClosed"] = closed;
 
   json["createdAt"] = createdAt.toString("yyyy-MM-dd hh:mm:ss");

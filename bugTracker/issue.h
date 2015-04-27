@@ -14,6 +14,7 @@ class Issue
     QStringList description;
     QString type;
     QString status;
+    QString priority;
     QDateTime createdAt;
     QDateTime updatedAt;
     QDateTime closedAt;

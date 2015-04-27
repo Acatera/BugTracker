@@ -19,6 +19,7 @@ Issue IssueDetailsUI::getIssue()
     issue.title = ui->lineEdit->text();
     issue.description.append(ui->plainTextEdit->toPlainText().split("\n"));
     issue.type = ui->comboBox->currentText();
+    issue.priority = ui->comboBox_2->currentText();
 
     return issue;
 }
@@ -28,6 +29,7 @@ void IssueDetailsUI::updateIssue(Issue *issue)
     issue->title = ui->lineEdit->text();
     issue->description.clear();
     issue->description.append(ui->plainTextEdit->toPlainText().split("\n"));
+    issue->priority = ui->comboBox_2->currentText();
     issue->type = ui->comboBox->currentText();
 }
 
@@ -35,6 +37,7 @@ void IssueDetailsUI::loadIssue(Issue *issue)
 {
     ui->lineEdit->setText(issue->title);
     ui->plainTextEdit->setPlainText(issue->description.join("\n"));
+    ui->comboBox_2->setCurrentText(issue->priority);
     ui->comboBox->setCurrentText(issue->type);
 }
 

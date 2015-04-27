@@ -21,25 +21,34 @@ MainWindow::~MainWindow()
 
 void MainWindow::displayIssues()
 {
-    ui->listWidget->clear();
-    ui->listWidget_2->clear();
+    ui->treeWidget->clear();
+    ui->treeWidget_2->clear();
 
     for (int i = 0; i < dataStore.issues.size(); i++){
         Issue &rIssue = dataStore.issues[i];
         QVariant qv = qVariantFromValue((void *) &dataStore.issues[i]);
 
-        QListWidgetItem *issueItem = new QListWidgetItem();
-        QString timeStamp = rIssue.isClosed() ? rIssue.closedAt.toString("yyyy-MM-dd hh:mm:ss") : "";
-        if (timeStamp != "") {
-            timeStamp += " ";
+        QString timeStamp;
+        if (rIssue.isClosed()) {
+            if (QDateTime::currentDateTime().daysTo(rIssue.closedAt) < -1) {
+                timeStamp = rIssue.closedAt.toString("yyyy-MM-dd");
+            } else {
+                timeStamp = "Today " + rIssue.closedAt.toString("hh:mm");
+            }
         }
 
-        issueItem->setText(timeStamp + rIssue.title);
-        issueItem->setData(Qt::UserRole, qv);
+        QTreeWidgetItem *twi = new QTreeWidgetItem();
+
+        twi->setData(0, Qt::UserRole, qv);
+
         if (rIssue.isClosed()) {
-            ui->listWidget_2->addItem(issueItem);
+            twi->setText(0, rIssue.title);
+            twi->setText(1, timeStamp);
+            ui->treeWidget_2->addTopLevelItem(twi);
         } else {
-            ui->listWidget->addItem(issueItem);
+            twi->setText(0, timeStamp + rIssue.title);
+            twi->setText(1, rIssue.priority);
+            ui->treeWidget->addTopLevelItem(twi);
         }
     }
 }
@@ -121,7 +130,7 @@ void MainWindow::keyPressEvent(QKeyEvent *evt)
     }
 
     if ((evt->key() == Qt::Key_Return)) {
-        if (ui->listWidget->hasFocus() || ui->listWidget_2->hasFocus()) {
+        if (ui->treeWidget->hasFocus() || ui->treeWidget_2->hasFocus()) {
             Issue *ptrIssue = getSelectedIssue();
             if (ptrIssue != nullptr) {
                 editIssue(ptrIssue);
@@ -131,7 +140,7 @@ void MainWindow::keyPressEvent(QKeyEvent *evt)
 
     /* Horrible hack. Will fix when I know a bit more about stuffs */
     bool isShiftPressed = evt->modifiers() & Qt::ShiftModifier;
-    if (ui->listWidget->hasFocus() && (evt->key() == Qt::Key_Right)) {
+    if (ui->treeWidget->hasFocus() && (evt->key() == Qt::Key_Right)) {
         if (isShiftPressed) {
             Issue *ptrIssue = getSelectedIssue();
 
@@ -141,12 +150,12 @@ void MainWindow::keyPressEvent(QKeyEvent *evt)
             setIssueDone(ptrIssue);
             displayIssues();
         } else {
-            ui->listWidget_2->setFocus();
-            if (ui->listWidget_2->selectedItems().size() == 0 && ui->listWidget->count() > 0) {
-                ui->listWidget_2->setCurrentRow(0);
+            ui->treeWidget_2->setFocus();
+            if (ui->treeWidget_2->selectedItems().size() == 0 && ui->treeWidget->topLevelItemCount() > 0) {
+                ui->treeWidget_2->setCurrentItem(0);
             }
         }
-    } else if (ui->listWidget_2->hasFocus() && (evt->key() == Qt::Key_Left)) {
+    } else if (ui->treeWidget_2->hasFocus() && (evt->key() == Qt::Key_Left)) {
         if (isShiftPressed) {
             Issue *ptrIssue = getSelectedIssue();
 
@@ -156,9 +165,9 @@ void MainWindow::keyPressEvent(QKeyEvent *evt)
             setIssuePending(ptrIssue);
             displayIssues();
         } else {
-            ui->listWidget->setFocus();
-            if (ui->listWidget->selectedItems().size() == 0 && ui->listWidget->count() > 0) {
-                ui->listWidget->setCurrentRow(0);
+            ui->treeWidget->setFocus();
+            if (ui->treeWidget->selectedItems().size() == 0 && ui->treeWidget->topLevelItemCount() > 0) {
+                ui->treeWidget->setCurrentItem(0);
             }
         }
     }
@@ -230,15 +239,15 @@ void MainWindow::on_btnUpdateStatus_clicked()
 
 Issue* MainWindow::getSelectedIssue()
 {
-    QListWidgetItem *ptrCurrent;
-    if (ui->listWidget->hasFocus()) {
-        ptrCurrent = ui->listWidget->currentItem();
-    } else if (ui->listWidget_2->hasFocus()) {
-        ptrCurrent = ui->listWidget_2->currentItem();
+    QTreeWidgetItem *ptrCurrent;
+    if (ui->treeWidget->hasFocus()) {
+        ptrCurrent = ui->treeWidget->currentItem();
+    } else if (ui->treeWidget_2->hasFocus()) {
+        ptrCurrent = ui->treeWidget_2->currentItem();
     }
 
     if (ptrCurrent != nullptr) {
-        Issue *pIssue = (Issue *) ptrCurrent->data(Qt::UserRole).value<void *>();
+        Issue *pIssue = (Issue *) ptrCurrent->data(0, Qt::UserRole).value<void *>();
         return pIssue;
     }
     return nullptr;
@@ -271,6 +280,46 @@ void MainWindow::on_listWidget_2_currentItemChanged(QListWidgetItem *current, QL
         return;
 
     Issue *ptrIssue = (Issue *) current->data(Qt::UserRole).value<void *>();
+
+    displayIssueDetails(ptrIssue);
+}
+
+void MainWindow::on_treeWidget_doubleClicked(const QModelIndex &index)
+{
+    (void) index;
+    Issue *ptrIssue = getSelectedIssue();
+    if (ptrIssue == nullptr)
+        return;
+    editIssue(ptrIssue);
+}
+
+void MainWindow::on_treeWidget_2_doubleClicked(const QModelIndex &index)
+{
+    (void) index;
+    Issue *ptrIssue = getSelectedIssue();
+    if (ptrIssue == nullptr)
+        return;
+    editIssue(ptrIssue);
+}
+
+void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+    (void) previous;
+    if (current == nullptr)
+        return;
+
+    Issue *ptrIssue = (Issue *) current->data(0, Qt::UserRole).value<void *>();
+
+    displayIssueDetails(ptrIssue);
+}
+
+void MainWindow::on_treeWidget_2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+    (void) previous;
+    if (current == nullptr)
+        return;
+
+    Issue *ptrIssue = (Issue *) current->data(0, Qt::UserRole).value<void *>();
 
     displayIssueDetails(ptrIssue);
 }

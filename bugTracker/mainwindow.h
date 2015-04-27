@@ -6,6 +6,7 @@
 
 #include <QMainWindow>
 #include <QListWidgetItem>
+#include <QTreeWidget>
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +34,10 @@ private slots:
     void on_pushButton_2_clicked();
     void on_btnUpdateStatus_clicked();
     void on_pushButton_3_clicked();
+    void on_treeWidget_doubleClicked(const QModelIndex &index);
+    void on_treeWidget_2_doubleClicked(const QModelIndex &index);
+    void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void on_treeWidget_2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 private:
     Ui::MainWindow *ui;
