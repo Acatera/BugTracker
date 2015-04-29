@@ -14,10 +14,10 @@ DataStore::~DataStore()
 {
 }
 
-bool DataStore::read()
+bool DataStore::read(QString filePath)
 {
     issues.clear();
-    QFile loadFile(QStringLiteral("save.json"));
+    QFile loadFile(filePath);
 
     if (!loadFile.open(QIODevice::ReadOnly)) {
         qWarning("Couldn't open save file.");
@@ -28,6 +28,7 @@ bool DataStore::read()
 
     QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
 
+    projectName = loadDoc.object()["projectName"].toString();
     QJsonArray jsonArray = loadDoc.object()["issues"].toArray();
 
     for (int i=0; i < jsonArray.size(); i++)
@@ -45,14 +46,16 @@ bool DataStore::read()
     return true;
 }
 
-bool DataStore::write()
+bool DataStore::write(QString filePath)
 {
-    QFile saveFile(QStringLiteral("save.json"));
+    QFile saveFile(filePath);
 
     if (!saveFile.open(QIODevice::WriteOnly)) {
         qWarning("Couldn't open save file.");
         return false;
     }
+
+    json["projectName"] = projectName;
 
     QJsonArray issueArray;
     foreach (const Issue issue, issues) {

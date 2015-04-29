@@ -3,6 +3,7 @@
 
 #include "datastore.h"
 #include "issuedetailsui.h"
+#include "settings.h"
 
 #include <QMainWindow>
 #include <QListWidgetItem>
@@ -38,17 +39,29 @@ private slots:
     void on_treeWidget_2_doubleClicked(const QModelIndex &index);
     void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void on_treeWidget_2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void on_treeWidget_3_customContextMenuRequested(const QPoint &pos);
+    void on_actionNew_project_triggered();
+    void on_actionOpen_project_triggered();
+    void on_actionSave_project_triggered();
+    void on_treeWidget_3_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void on_treeWidget_3_doubleClicked(const QModelIndex &index);
+    void on_treeWidget_3_itemChanged(QTreeWidgetItem *item, int column);
+
+    void on_actionRemove_project_triggered();
 
 private:
     Ui::MainWindow *ui;
     IssueDetailsUI *idUI;
     DataStore dataStore;
-    Issue* getSelectedIssue();
+    Settings settings;
 
+    Issue* getSelectedIssue();
+    int editingState;
     void displayIssues();
     void editIssue(Issue *issue);
     void newIssue();
     void keyPressEvent(QKeyEvent *evt);
+    void loadProjects();
 };
 
 #endif // MAINWINDOW_H

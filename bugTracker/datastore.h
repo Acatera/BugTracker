@@ -12,9 +12,10 @@ class DataStore
 public:
     DataStore();
     ~DataStore();
-    bool read();
-    bool write();
+    bool read(QString filePath);
+    bool write(QString filePath);
     QList<Issue> issues;
+    QString projectName;
 private:
     QJsonObject json;
 

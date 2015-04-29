@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     issueitem.cpp \
     issue.cpp \
     datastore.cpp \
-    issuedetailsui.cpp
+    issuedetailsui.cpp \
+    settings.cpp
 
 HEADERS  += mainwindow.h \
     issueitem.h \
     issue.h \
     datastore.h \
-    issuedetailsui.h
+    issuedetailsui.h \
+    settings.h
 
 FORMS    += mainwindow.ui \
     issuedetailsui.ui
